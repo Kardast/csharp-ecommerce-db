@@ -24,23 +24,11 @@ Console.WriteLine("Hello, World!");
 //Il dipendente deve spedire gli ordini acquistati correttamente.
 //modificare il db e l’applicazione in modo che venga gestita questa possibilità.
 
-//Console.WriteLine("Sei un dipendente o un cliente?");
-//string user = Console.ReadLine();
-//if (user == "dipendente")
-//{
-//    //si possono eseguire operazioni sugli ordini
-//}
-//else if (user == "cliente")
-//{
-//    //si possono acquistare gli ordini
-//}
-//else
-//    Console.WriteLine("Inserire un'opzione valida");
-
-
 EcommerceDbContext db = new EcommerceDbContext();
 
 List<Customer>myCustomers = db.Customers.ToList<Customer>();
+//List<Customer> customers = db.Customers.OrderBy(customer => customer.Name).ToList<Customer>();
+
 
 if (myCustomers.Count == 0)
 {
@@ -54,6 +42,18 @@ if (myCustomers.Count == 0)
     db.Customers.Add(federica);
     db.Customers.Add(cirox);
     db.Customers.Add(mistre);
+
+    db.SaveChanges();
+}
+
+List<Employee> myEmployees = db.Employees.ToList<Employee>();
+
+if (myEmployees.Count == 0)
+{
+    // Create Employee
+    Employee chicco = new Employee { Name = "Chicco", Surname = "Ricco"};
+
+    db.Employees.Add(chicco);
 
     db.SaveChanges();
 }
@@ -88,25 +88,85 @@ if (myProducts.Count == 0)
     db.SaveChanges();
 }
 
-// Read
-Console.WriteLine();
-//List<Customer> customers = db.Customers.OrderBy(customer => customer.Name).ToList<Customer>();
-Console.WriteLine("lista utenti: ");
-foreach (Customer customer in myCustomers)
-{
-    Console.WriteLine(customer.Name);
-}
-Console.WriteLine();
-Console.WriteLine("lista prodotti: ");
-foreach (Product product in myProducts)
-{
-    Console.WriteLine(product.Name);
-}
+Console.WriteLine("Benvenut nell'ecommerce 'Papere ed Oche'");
+Console.WriteLine("Sei un dipendente o un cliente? [1/2]");
+int user = Convert.ToInt32(Console.ReadLine());
 
-// Update
-//sandro.Name = "Papera";
-//db.SaveChanges();
-//Console.WriteLine("update " + sandro.Name);
+if (user == 1)
+{
+    //Si possono eseguire operazioni sugli ordini
+    //Read customers
+    Console.WriteLine();
+    Console.WriteLine("lista utenti: ");
+    foreach (Customer customer in myCustomers)
+    {
+        Console.WriteLine(customer.Name);
+    }
+    //Read products
+    Console.WriteLine();
+    Console.WriteLine("lista prodotti: ");
+    foreach (Product product in myProducts)
+    {
+        Console.WriteLine(product.Name);
+    }
+
+    //Read orders
+    Console.WriteLine();
+    Console.WriteLine("lista ordini: ");
+    List<Order> myOrders = db.Orders.OrderBy(order => order.Date).ToList<Order>();
+
+    foreach (Order order in myOrders)
+    {
+        Console.WriteLine("Data: {0}\nQuantità: {1}\nStatus: {2}\nCustomer Id: {3}\nEmployee Id: {4}", order.Date, order.Amount, order.Status, order.CustomerId, order.EmployeeId);
+        Console.WriteLine("--------------------------------");
+    }
+
+    //Update
+    //sandro.Name = "Papera";
+    //db.SaveChanges();
+    //Console.WriteLine("update " + sandro.Name);
+}
+else if (user == 2)
+{
+    //READ vengono mostrati i prodotti
+    Console.WriteLine("I prodotti presenti nel nostro ecommerce sono: ");
+    foreach (Product product in myProducts)
+    {
+        Console.WriteLine("Nome: {0}\ndescrizione: {1}\nprezzo: {2} euro", product.Name, product.Description, product.Price);
+        Console.WriteLine("--------------------------------");
+    }
+    Console.WriteLine("Vuoi effettuare un ordine? [si/no]");
+    string inputOrder = Console.ReadLine();
+    if (inputOrder == "si")
+    {
+        Console.WriteLine("Scrivi quanti prodotti vuoi acquistare:");
+        int numberItems = Convert.ToInt32(Console.ReadLine());
+        List<String> items = new List<String>();
+
+        for (int i = 0; i < numberItems; i++)
+        {
+            Console.WriteLine("Scrivi il nome del prodotto:");
+            string inputItem = Console.ReadLine();
+            items.Add(inputItem);
+        }
+
+        Random rnd = new Random();
+        Order newOrder = new Order() { Date = DateTime.Today, Amount = numberItems, Status = rnd.Next(2) == 1, CustomerId = 1, EmployeeId = 1 };
+
+        newOrder.Products = new List<Product>();
+        foreach (String item in items)
+        {
+            Product orderedProduct = db.Products.Where(product => product.Name == item).FirstOrDefault();
+            newOrder.Products.Add(orderedProduct);
+        }
+
+        db.Orders.Add(newOrder);
+        db.SaveChanges();
+    }
+}
+else
+    Console.WriteLine("Inserire un'opzione valida");
+
 
 // Delete
 //db.Customers.Remove(sandro);
