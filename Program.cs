@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 Console.WriteLine("Hello, World!");
 
@@ -117,14 +118,45 @@ if (user == 1)
 
     foreach (Order order in myOrders)
     {
-        Console.WriteLine("Data: {0}\nQuantità: {1}\nStatus: {2}\nCustomer Id: {3}\nEmployee Id: {4}", order.Date, order.Amount, order.Status, order.CustomerId, order.EmployeeId);
+        Console.WriteLine("Data: {0}\nQuantità: {1}\nStatus: {2}\nCustomer Id: {3}\nEmployee Id: {4}\nOrder Id: {5}", order.Date, order.Amount, order.Status, order.CustomerId, order.EmployeeId, order.Id);
         Console.WriteLine("--------------------------------");
     }
 
     //Update
-    //sandro.Name = "Papera";
-    //db.SaveChanges();
-    //Console.WriteLine("update " + sandro.Name);
+    Console.WriteLine();
+    Console.WriteLine("Quale ordine vuoi modificare? Inserire ID");
+    int orderId = Convert.ToInt32(Console.ReadLine());
+    Console.WriteLine();
+
+    Console.WriteLine("Nuova data ordine");
+    DateTime orderDate = DateTime.Parse(Console.ReadLine());
+
+    Console.WriteLine("Nuovo totale ordine");
+    int orderAmount = Convert.ToInt32(Console.ReadLine()); 
+
+    Console.WriteLine("Nuovo status");
+    int orderStatus = Convert.ToInt32(Console.ReadLine());
+    bool boolStatus = Convert.ToBoolean(orderStatus);
+
+    Console.WriteLine("Nuovo customer id");
+    int orderCustomerId = Convert.ToInt32(Console.ReadLine());
+
+    Console.WriteLine("Nuova employee id");
+    int orderEmployeeID = Convert.ToInt32(Console.ReadLine());
+
+    foreach (Order order in myOrders)
+    {
+        if(order.Id == orderId)
+        {
+            order.Date = orderDate;
+            order.Amount = orderAmount;
+            order.Status = boolStatus;
+            order.CustomerId = orderCustomerId;
+            order.EmployeeId = orderEmployeeID;
+        }
+    }
+    db.SaveChanges();
+    //Console.WriteLine("update " + order.Date);
 }
 else if (user == 2)
 {
