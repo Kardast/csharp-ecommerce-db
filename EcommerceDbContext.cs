@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.EntityFrameworkCore;
 public class EcommerceDbContext : DbContext
 {
     public DbSet<Customer> Customers { get; set; }
